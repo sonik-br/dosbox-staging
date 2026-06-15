@@ -7,6 +7,7 @@
 
 #include "hardware/serialport/nullmodem.h"
 #include "hardware/serialport/serialdummy.h"
+#include "hardware/serialport/serialiforce.h"
 #include "hardware/serialport/serialmouse.h"
 #include "hardware/serialport/softmodem.h"
 
@@ -20,6 +21,7 @@ static std::map<SERIAL_PORT_TYPE, const std::string> serial_type_names = {
         {     SERIAL_PORT_TYPE::MODEM,     "modem"},
         {SERIAL_PORT_TYPE::NULL_MODEM, "nullmodem"},
         {     SERIAL_PORT_TYPE::MOUSE,     "mouse"},
+        {    SERIAL_PORT_TYPE::IFORCE,    "iforce"},
         {   SERIAL_PORT_TYPE::INVALID,   "invalid"},
 };
 
@@ -138,6 +140,10 @@ void SERIAL::Run()
 			serialports[port_index] = new CSerialMouse(port_index,
 			                                           commandLine);
 			break;
+		case SERIAL_PORT_TYPE::IFORCE:
+			serialports[port_index] = new CSerialIForce(port_index,
+			                                            commandLine);
+			break;
 		default:
 			serialports[port_index] = nullptr;
 			LOG_WARNING("SERIAL: Unknown serial port type %d", desired_type);
@@ -168,7 +174,7 @@ void SERIAL::AddMessages() {
 	        "  [color=light-green]serial[reset] [color=white]PORT#[reset] [color=light-cyan]DEVICE[reset] [settings]   Attach specified device to the given port.\n"
 	        "\n"
 	        "Parameters:\n"
-	        "  [color=light-cyan]DEVICE[reset]  one of: [color=light-cyan]MODEM[reset], [color=light-cyan]NULLMODEM[reset], [color=light-cyan]MOUSE[reset], [color=light-cyan]DIRECT[reset], [color=light-cyan]DUMMY[reset], or [color=light-cyan]DISABLED[reset]\n"
+	        "  [color=light-cyan]DEVICE[reset]  one of: [color=light-cyan]MODEM[reset], [color=light-cyan]NULLMODEM[reset], [color=light-cyan]MOUSE[reset], [color=light-cyan]IFORCE[reset], [color=light-cyan]DIRECT[reset], [color=light-cyan]DUMMY[reset], or [color=light-cyan]DISABLED[reset]\n"
 	        "\n"
 	        "  Optional settings for each [color=light-cyan]DEVICE[reset]:\n"
 	        "  For [color=light-cyan]MODEM[reset]     : IRQ, LISTENPORT, SOCK\n"

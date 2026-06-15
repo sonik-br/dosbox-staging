@@ -23,6 +23,7 @@ target_sources(dosboxcommon PRIVATE
   input/intel8042.cpp
   input/intel8255.cpp
   input/joystick.cpp
+  input/joystick_ffb.cpp
   input/keyboard.cpp
   input/keyboard_scancodes.cpp
   input/mouse.cpp
@@ -42,6 +43,7 @@ target_sources(dosboxcommon PRIVATE
   serialport/misc_util.cpp
   serialport/nullmodem.cpp
   serialport/serialdummy.cpp
+  serialport/serialiforce.cpp
   serialport/serialmouse.cpp
   serialport/serialport.cpp
   serialport/softmodem.cpp

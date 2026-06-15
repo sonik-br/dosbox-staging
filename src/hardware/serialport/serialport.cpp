@@ -11,6 +11,7 @@
 
 #include "nullmodem.h"
 #include "serialdummy.h"
+#include "serialiforce.h"
 #include "serialmouse.h"
 #include "serialport.h"
 #include "softmodem.h"
@@ -1338,6 +1339,14 @@ public:
 					delete serialports[i];
 					serialports[i] = nullptr;
 				}
+			} else if (type == "iforce") {
+				serialports[i] = new CSerialIForce (i, &cmd);
+				serialports[i]->serialType = SERIAL_PORT_TYPE::IFORCE;
+				cmd.GetStringRemain(serialports[i]->commandLineString);
+				if (!serialports[i]->InstallationSuccessful) {
+					delete serialports[i];
+					serialports[i] = nullptr;
+				}
 			} else if (has_false(type)) {
 				serialports[i] = nullptr;
 			} else {
@@ -1390,8 +1399,7 @@ static void add_serial_config_settings(SectionProp& section)
 {
 	using enum Property::Changeable::Value;
 
-	const std::vector<std::string> serials = {
-	        "dummy", "disabled", "mouse", "modem", "nullmodem", "direct"};
+	const std::vector<std::string> serials = {"dummy", "disabled", "mouse", "iforce", "modem", "nullmodem", "direct"};
 
 	auto pmulti_remain = section.AddMultiValRemain("serial1", WhenIdle, " ");
 	auto pstring = pmulti_remain->GetSection()->AddString("type", WhenIdle, "dummy");
@@ -1405,6 +1413,7 @@ static void add_serial_config_settings(SectionProp& section)
 	        "  disabled:  Disables the port.\n"
 	        "  dummy:     Emulates the port without a device attached to it.\n"
 	        "  mouse:     Emulates a serial mouse attached to the port.\n"
+	        "  iforce:    Emulates a Immersion I-FORCE force-feedback joystick.\n"
 	        "  modem:     Emulates a modem attached to the port.\n"
 	        "  nullmodem: Emulates a nullmoden attached to the port.\n"
 	        "  direct:    Emulates a direct serial link.\n"
@@ -1413,6 +1422,16 @@ static void add_serial_config_settings(SectionProp& section)
 	        "The optional 'irq' parameter is common for all types. Available parameters:\n"
 	        "\n"
 	        "  - for 'mouse':      model (optional; overrides the 'com_mouse_model' setting).\n"
+	        "\n"
+	        "  - for 'iforce':     ffb (off, rumble, wheel, or joystick; 'rumble' by\n"
+	        "                      default), ffbstrength (0-100; 100 by default),\n"
+	        "                      ffbinvertx, ffbinverty (on/off; off by default).\n"
+	        "                      'rumble' drives gamepad vibration from Jolt and\n"
+	        "                      Vibration effects; 'wheel' drives true force feedback\n"
+	        "                      (constant force, springs, vibration) on the steering\n"
+	        "                      (X) axis only; 'joystick' is true force feedback on\n"
+	        "                      both X and Y axes. Use ffbinvertx/ffbinverty to flip\n"
+	        "                      force direction per axis if a game feels reversed.\n"
 	        "\n"
 	        "  - for 'direct':     realport (required), rxdelay (optional).\n"
 	        "                      (e.g., realport:COM1, realport:ttyS0).\n"
